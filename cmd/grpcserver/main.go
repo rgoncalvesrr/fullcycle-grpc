@@ -18,16 +18,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db.Close()
+	defer db.Close()
 
 	categoryDB := database.NewCategory(db)
 
 	categoryService := service.NewCategoryService(*categoryDB)
 
 	grpcServer := grpc.NewServer()
-	reflection.Register(grpcServer)
-
 	pb.RegisterCategoryServiceServer(grpcServer, categoryService)
+	reflection.Register(grpcServer)
 
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
